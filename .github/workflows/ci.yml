@@ -1,0 +1,53 @@
+# GitHub-hosted runners only. Never attach a self-hosted runner to a public
+# repository: any pull request author could run code on that machine.
+# Actions are pinned to full commit SHAs (a moved tag cannot change what runs);
+# Dependabot proposes the bumps.
+name: ci
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Tests from source
+        run: |
+          git config --global user.name ci
+          git config --global user.email ci@users.noreply.github.com
+          python -m pip install --require-hashes -r requirements-ci.txt
+          python -m pytest -q
+      - name: Clean install, then run the installed CLI
+        run: |
+          python -m venv /tmp/clean
+          # hash-pinned deps and build backend first; then the package itself with
+          # no dependency resolution and no build-isolation download
+          /tmp/clean/bin/pip install --require-hashes -r requirements-ci.txt
+          /tmp/clean/bin/pip install --no-deps --no-build-isolation .
+          export PATH=/tmp/clean/bin:$PATH CROSSBOX_MACHINE=ci
+          mkdir -p /tmp/demo && cd /tmp/demo && git init -q -b main
+          crossbox init
+          crossbox new "demo task" -d demo
+          crossbox add TASK-DEMO-001 "first step"
+          crossbox add TASK-DEMO-001 "second step" -D a
+          crossbox ready
+          crossbox done TASK-DEMO-001.a
+          crossbox doctor selftest
+          crossbox status --summary --json | python -c "import json,sys; json.load(sys.stdin)"
+          set +e
+          crossbox done TASK-DEMO-001.b --notes x
+          rc=$?
+          set -e
+          test "$rc" -eq 64
+      - name: README walkthrough, played by examples/demo.sh
+        run: PATH=/tmp/clean/bin:$PATH sh examples/demo.sh

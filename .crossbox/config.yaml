@@ -1,0 +1,6 @@
+# crossbox tracks its own roadmap here. Clone the repository and run
+# `crossbox status` or `crossbox ready` to see it. The queue was started on
+# 2026-10-15; work done before that is recorded as done on that date.
+prefix: CBX
+machines:
+  maintainer: {provides: [pypi]}

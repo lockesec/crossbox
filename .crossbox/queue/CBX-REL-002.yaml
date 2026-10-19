@@ -1,0 +1,24 @@
+id: CBX-REL-002
+title: 0.2.0 release
+priority: high
+domain: rel
+created: 2026-10-15
+created_by: maintainer
+source_task: ''
+steps:
+- id: a
+  title: Sixth review round over plan, plugin and views
+  target: any
+  needs: []
+  status: done
+  depends_on: []
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 8662c19a87e2cd74729509e10567c8cb6b3c535e
+- id: b
+  title: Tag v0.2.0 once main carries it
+  target: any
+  needs: [maintainer-go]
+  status: pending
+  depends_on: [a]

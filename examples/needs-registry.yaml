@@ -1,0 +1,16 @@
+# .crossbox/needs-registry.yaml: the vocabulary for a step's `needs:` list.
+# Only `gate` tokens affect readiness. Routing to machines is done by `target`.
+schema: 1
+tokens:
+  docker:        {kind: capability, desc: "documentation only; route with target"}
+  staging-up:    {kind: gate, probe: "curl -fsS http://localhost:8080/health >/dev/null",
+                  desc: "exit 0 = open, exit 1 = closed, anything else = not evaluable"}
+  design-signoff: {kind: gate, clearable: operator, desc: "a human says go (ready --operator)"}
+  vendor-release: {kind: gate, desc: "manual; someone else clears it"}
+  large:         {kind: estimate}
+aliases:
+  containers: docker
+prefix_kinds:
+  "compute-": estimate
+  "upstream-fix:": gate        # e.g. upstream-fix:libfoo#123 (manual)
+# Built in: date-reached:YYYY-MM-DD opens on that UTC day.

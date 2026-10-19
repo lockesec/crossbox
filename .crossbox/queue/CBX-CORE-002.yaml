@@ -1,0 +1,48 @@
+id: CBX-CORE-002
+title: progress and near-done views
+priority: normal
+domain: core
+created: 2026-10-15
+created_by: maintainer
+source_task: ''
+steps:
+- id: a
+  title: 'progress: completion per task, domain and priority, each count beside its denominator'
+  target: any
+  needs: []
+  status: done
+  depends_on: []
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 44fe185f27e3b4ca5ab335256661ee3d726a6944
+- id: b
+  title: 'near-done: tasks one or two steps from closed, and which machine can finish them'
+  target: any
+  needs: []
+  status: done
+  depends_on: []
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 44fe185f27e3b4ca5ab335256661ee3d726a6944
+- id: c
+  title: 'graph: export the dependency graph as Mermaid, DOT or JSON; titles escaped as untrusted text'
+  target: any
+  needs: []
+  status: done
+  depends_on: []
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 44fe185f27e3b4ca5ab335256661ee3d726a6944
+- id: d
+  title: README shows the sample queue as a Mermaid graph, regenerated and compared in CI
+  target: any
+  needs: []
+  status: done
+  depends_on: [c]
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 44fe185f27e3b4ca5ab335256661ee3d726a6944

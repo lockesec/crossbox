@@ -1,0 +1,32 @@
+id: CBX-CORE-003
+title: 'groups: cross-task sets of steps with provenance'
+priority: normal
+domain: core
+created: 2026-10-15
+created_by: maintainer
+source_task: ''
+steps:
+- id: a
+  title: Settle the open questions in docs/design/groups.md
+  target: any
+  needs: [maintainer-go]
+  status: pending
+  depends_on: []
+- id: b
+  title: 'Write the contract: store, verbs, rename-verb plumbing, origin guard for GRP ids'
+  target: any
+  needs: []
+  status: pending
+  depends_on: [a]
+- id: c
+  title: Build group verbs and plan --groups
+  target: any
+  needs: []
+  status: pending
+  depends_on: [b]
+- id: d
+  title: 'Review round on groups: every rename verb keeps members pointing at the same work'
+  target: any
+  needs: []
+  status: pending
+  depends_on: [c]
