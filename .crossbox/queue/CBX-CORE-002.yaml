@@ -15,7 +15,7 @@ steps:
   completed_by: maintainer
   completed: 2026-10-15
   commits:
-  - 44fe185f27e3b4ca5ab335256661ee3d726a6944
+  - 21d29f13f2b7a01ee8abdc3022eb94a93d38ffdc
 - id: b
   title: 'near-done: tasks one or two steps from closed, and which machine can finish them'
   target: any
@@ -25,7 +25,7 @@ steps:
   completed_by: maintainer
   completed: 2026-10-15
   commits:
-  - 44fe185f27e3b4ca5ab335256661ee3d726a6944
+  - 21d29f13f2b7a01ee8abdc3022eb94a93d38ffdc
 - id: c
   title: 'graph: export the dependency graph as Mermaid, DOT or JSON; titles escaped as untrusted text'
   target: any
@@ -35,7 +35,7 @@ steps:
   completed_by: maintainer
   completed: 2026-10-15
   commits:
-  - 44fe185f27e3b4ca5ab335256661ee3d726a6944
+  - 21d29f13f2b7a01ee8abdc3022eb94a93d38ffdc
 - id: d
   title: README shows the sample queue as a Mermaid graph, regenerated and compared in CI
   target: any
@@ -45,4 +45,4 @@ steps:
   completed_by: maintainer
   completed: 2026-10-15
   commits:
-  - 44fe185f27e3b4ca5ab335256661ee3d726a6944
+  - 21d29f13f2b7a01ee8abdc3022eb94a93d38ffdc
