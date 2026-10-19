@@ -1,0 +1,16 @@
+# .crossbox/config.yaml: a two-machine example. Every key is optional.
+prefix: TASK                  # ids: TASK-001 or TASK-<DOMAIN>-001
+# upstream: origin/main       # default: origin/<default branch>
+# extra_refs: ["refs/remotes/origin/*"]   # also read every pushed branch
+priorities: [critical, high, normal, low]
+stale_days: 3                 # claims older than this are flagged (never released)
+rate_gate: {cap: 30, window: 600}
+machines:
+  laptop:
+    hostnames: [my-laptop]    # hostname -> machine name; else CROSSBOX_MACHINE
+    provides: [docker]
+  workstation:
+    hostnames: [big-box]
+    provides: [gpu, docker]
+# A step's `target` names a capability (or a machine name); `any` = anywhere.
+# target_aliases: {either: any}   # legacy spellings, accepted on read only

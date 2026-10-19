@@ -1,0 +1,36 @@
+id: TASK-WEB-002
+title: Password reset by email
+priority: normal
+domain: web
+created: 2026-10-15
+created_by: laptop
+source_task: ''
+steps:
+- id: a
+  title: Reset-token table and expiry job
+  target: any
+  needs: []
+  status: pending
+  depends_on: [TASK-WEB-001.b]
+  notes: Reuses the limiter so reset requests are throttled too
+- id: b
+  title: Send mail through the vendor SDK 1.x
+  target: any
+  needs: []
+  status: skipped
+  depends_on: []
+  notes: 'SKIPPED 2026-10-15 by laptop. Reason: SDK 1.x is end-of-life in December. Superseded by: TASK-WEB-002.c.'
+  completed_by: laptop
+  completed: 2026-10-15
+- id: c
+  title: Send mail through the vendor SDK 2.0
+  target: any
+  needs: [vendor-sdk-2]
+  status: pending
+  depends_on: []
+- id: d
+  title: Write the reset email copy
+  target: any
+  needs: []
+  status: pending
+  depends_on: []

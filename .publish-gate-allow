@@ -1,0 +1,4 @@
+# Review terms that are legitimate in this repository. crossbox itself never reads
+# this file; an external pre-publish check does (publish-gate).
+# Block terms can never be excused here.
+crossbox   # the project's own name

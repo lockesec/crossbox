@@ -1,0 +1,11 @@
+{
+  "name": "crossbox",
+  "version": "0.2.0",
+  "description": "Use the crossbox git-native task queue without being told each session: a SessionStart view, a guard against direct queue edits, a skill for the loop, and MCP tools.",
+  "author": {
+    "name": "crossbox"
+  },
+  "license": "Apache-2.0",
+  "repository": "https://github.com/sethpsonnier/crossbox",
+  "homepage": "https://github.com/sethpsonnier/crossbox"
+}

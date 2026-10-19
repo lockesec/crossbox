@@ -1,0 +1,43 @@
+# crossbox claims: advisory, append-only. Written by `crossbox claim` and
+# `crossbox release`; merged across branches by `crossbox merge-driver`.
+claims:
+- id: CLM-maintainer-001
+  machine: maintainer
+  slot: main
+  subject: CBX-REL-001.d
+  source: ''
+  intent: fifth review round
+  created: '2026-10-15'
+  status: released
+  released: '2026-10-15'
+  step_ref: CBX-REL-001.d
+- id: CLM-maintainer-002
+  machine: maintainer
+  slot: main
+  subject: plan contract and build
+  source: ''
+  intent: v0.2 plan
+  created: '2026-10-15'
+  status: released
+  released: '2026-10-15'
+  step_ref: CBX-CORE-001.a
+- id: CLM-maintainer-003
+  machine: maintainer
+  slot: main
+  subject: plugin build
+  source: ''
+  intent: v0.2 plugin
+  created: '2026-10-15'
+  status: released
+  released: '2026-10-15'
+  step_ref: CBX-AGENT-001.a
+- id: CLM-maintainer-004
+  machine: maintainer
+  slot: main
+  subject: progress, near-done, graph
+  source: ''
+  intent: v0.2 views
+  created: '2026-10-15'
+  status: released
+  released: '2026-10-15'
+  step_ref: CBX-CORE-002.a

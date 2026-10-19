@@ -1,0 +1,12 @@
+# crossbox claims: advisory, append-only. Written by `crossbox claim` and
+# `crossbox release`; merged across branches by `crossbox merge-driver`.
+claims:
+- id: CLM-laptop-001
+  machine: laptop
+  slot: main
+  subject: TASK-WEB-001.b
+  source: ''
+  intent: middleware, branch rate-limit
+  created: '2026-10-15'
+  status: active
+  step_ref: TASK-WEB-001.b

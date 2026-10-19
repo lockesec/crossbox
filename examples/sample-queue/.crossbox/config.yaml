@@ -1,0 +1,9 @@
+# A sample queue for a small web service, worked from two machines.
+# Look at it from the crossbox checkout:
+#   crossbox --root examples/sample-queue status
+#   CROSSBOX_MACHINE=laptop crossbox --root examples/sample-queue ready
+#   CROSSBOX_MACHINE=workstation crossbox --root examples/sample-queue ready
+prefix: TASK
+machines:
+  laptop:      {provides: [docker]}
+  workstation: {provides: [docker, gpu, staging]}

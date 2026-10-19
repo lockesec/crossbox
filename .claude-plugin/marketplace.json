@@ -1,0 +1,12 @@
+{
+  "name": "crossbox",
+  "owner": {"name": "crossbox"},
+  "metadata": {"description": "The crossbox task queue for Claude Code agents."},
+  "plugins": [
+    {
+      "name": "crossbox",
+      "source": "./plugin",
+      "description": "Use the crossbox task queue without being told each session: hooks, a skill, MCP tools."
+    }
+  ]
+}

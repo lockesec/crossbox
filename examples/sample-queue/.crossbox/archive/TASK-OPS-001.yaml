@@ -1,0 +1,24 @@
+id: TASK-OPS-001
+title: Nightly database backups
+priority: normal
+domain: ops
+created: 2026-10-15
+created_by: laptop
+source_task: ''
+steps:
+- id: a
+  title: Backup job with 14-day retention
+  target: any
+  needs: []
+  status: done
+  depends_on: []
+  completed_by: laptop
+  completed: 2026-10-15
+- id: b
+  title: Restore drill on a scratch database
+  target: any
+  needs: []
+  status: done
+  depends_on: [a]
+  completed_by: laptop
+  completed: 2026-10-15
