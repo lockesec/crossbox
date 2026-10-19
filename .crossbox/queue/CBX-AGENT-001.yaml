@@ -15,7 +15,7 @@ steps:
   completed_by: maintainer
   completed: 2026-10-15
   commits:
-  - 468306f5d01bc6ad7b7da3fb3fbca21e6e132d5f
+  - 759f28c3af3a47e4e07670e08d721e1b0202672b
 - id: b
   title: 'A skill that teaches the loop: ready, claim, work, done, release'
   target: any
@@ -25,7 +25,7 @@ steps:
   completed_by: maintainer
   completed: 2026-10-15
   commits:
-  - 468306f5d01bc6ad7b7da3fb3fbca21e6e132d5f
+  - 759f28c3af3a47e4e07670e08d721e1b0202672b
 - id: c
   title: 'An MCP tool: verb allowlist, argv only, never a shell'
   target: any
@@ -35,7 +35,7 @@ steps:
   completed_by: maintainer
   completed: 2026-10-15
   commits:
-  - d230361cb7cfd01e1b087858581f396bda2af754
+  - 759f28c3af3a47e4e07670e08d721e1b0202672b
 - id: d
   title: 'Statusline entry: ready and claimed counts for this worktree'
   target: any
@@ -45,4 +45,4 @@ steps:
   completed_by: maintainer
   completed: 2026-10-15
   commits:
-  - c49cddb8f7636e374297089c3e7d0e7652a0c8f2
+  - 759f28c3af3a47e4e07670e08d721e1b0202672b
