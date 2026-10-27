@@ -1,0 +1,6 @@
+# No shell probes here, so reading this sample runs nothing.
+schema: 1
+tokens:
+  security-signoff: {kind: gate, clearable: operator, desc: "a human says go (ready --operator)"}
+  vendor-sdk-2:     {kind: gate, desc: "manual; waits on the vendor's 2.0 SDK"}
+  large:            {kind: estimate}

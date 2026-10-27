@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crossbox"
+version = "0.2.0"
+description = "A git-native task queue for coding agents and humans working across several machines and git worktrees"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.9"
+dependencies = ["PyYAML>=5.1"]
+keywords = ["task-queue", "git", "worktree", "coding-agents", "claims", "yaml"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development",
+    "Intended Audience :: Developers",
+    "Environment :: Console",
+    "Operating System :: POSIX",
+    "Development Status :: 4 - Beta",
+]
+
+[project.urls]
+Homepage = "https://github.com/lockesec/crossbox"
+Documentation = "https://github.com/lockesec/crossbox/tree/main/docs"
+Issues = "https://github.com/lockesec/crossbox/issues"
+
+[project.scripts]
+crossbox = "crossbox.cli:main"
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

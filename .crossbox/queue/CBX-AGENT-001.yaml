@@ -1,0 +1,48 @@
+id: CBX-AGENT-001
+title: Claude Code plugin
+priority: high
+domain: agent
+created: 2026-10-15
+created_by: maintainer
+source_task: ''
+steps:
+- id: a
+  title: Package the two example hooks as a plugin with a marketplace manifest
+  target: any
+  needs: []
+  status: done
+  depends_on: [CBX-REL-001.d]
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 468306f5d01bc6ad7b7da3fb3fbca21e6e132d5f
+- id: b
+  title: 'A skill that teaches the loop: ready, claim, work, done, release'
+  target: any
+  needs: []
+  status: done
+  depends_on: [a]
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 468306f5d01bc6ad7b7da3fb3fbca21e6e132d5f
+- id: c
+  title: 'An MCP tool: verb allowlist, argv only, never a shell'
+  target: any
+  needs: []
+  status: done
+  depends_on: [a]
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - d230361cb7cfd01e1b087858581f396bda2af754
+- id: d
+  title: 'Statusline entry: ready and claimed counts for this worktree'
+  target: any
+  needs: []
+  status: done
+  depends_on: [a]
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - c49cddb8f7636e374297089c3e7d0e7652a0c8f2

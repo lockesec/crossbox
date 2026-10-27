@@ -1,0 +1,4 @@
+# No shell probes, so `crossbox ready` in a fresh clone runs nothing.
+schema: 1
+tokens:
+  maintainer-go: {kind: gate, clearable: operator, desc: "the maintainer says ship (ready --operator)"}

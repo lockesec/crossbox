@@ -1,0 +1,35 @@
+id: TASK-WEB-001
+title: Rate-limit the login endpoint
+priority: high
+domain: web
+created: 2026-10-15
+created_by: laptop
+source_task: ''
+steps:
+- id: a
+  title: Pick the limiter design (token bucket vs fixed window)
+  target: any
+  needs: []
+  status: done
+  depends_on: []
+  notes: Token bucket per account and per IP; decision recorded in docs/adr/007.md
+  completed_by: laptop
+  completed: 2026-10-15
+- id: b
+  title: Implement the middleware
+  target: any
+  needs: [large]
+  status: pending
+  depends_on: [a]
+- id: c
+  title: Load-test 500 logins/s against staging
+  target: staging
+  needs: []
+  status: pending
+  depends_on: [b]
+- id: d
+  title: Turn it on in production
+  target: any
+  needs: [security-signoff]
+  status: pending
+  depends_on: [c]

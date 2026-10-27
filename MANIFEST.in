@@ -1,0 +1,8 @@
+# the sdist carries everything needed to run the test suite
+graft tests
+graft examples
+graft plugin
+graft .claude-plugin
+include requirements-ci.txt README.md DESIGN.md CHANGELOG.md CONTRIBUTING.md SECURITY.md LICENSE NOTICE
+graft docs
+global-exclude *.py[cod]
