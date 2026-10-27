@@ -15,7 +15,7 @@ steps:
   completed_by: maintainer
   completed: 2026-10-15
   commits:
-  - db078dcca7fa5ef0d40575be3e854e3ed513e6ae
+  - 76442fe798382c204da667e61744d05072f0a4f0
 - id: b
   title: crossbox plan, with --json; the global --machine plans as another machine sees it
   target: any
@@ -25,7 +25,7 @@ steps:
   completed_by: maintainer
   completed: 2026-10-15
   commits:
-  - 6e661655e6dbbc786fa6b4aa2a2633ae4125765f
+  - 76442fe798382c204da667e61744d05072f0a4f0
 - id: c
   title: 'Invariant tests: deterministic ties, cycles named, malformed steps never planned'
   target: any
@@ -35,4 +35,4 @@ steps:
   completed_by: maintainer
   completed: 2026-10-15
   commits:
-  - 6e661655e6dbbc786fa6b4aa2a2633ae4125765f
+  - 76442fe798382c204da667e61744d05072f0a4f0

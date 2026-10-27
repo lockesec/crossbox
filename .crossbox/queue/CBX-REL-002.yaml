@@ -15,7 +15,7 @@ steps:
   completed_by: maintainer
   completed: 2026-10-15
   commits:
-  - 8662c19a87e2cd74729509e10567c8cb6b3c535e
+  - 76442fe798382c204da667e61744d05072f0a4f0
 - id: b
   title: Tag v0.2.0 once main carries it
   target: any
