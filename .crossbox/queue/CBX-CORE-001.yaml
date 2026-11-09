@@ -1,0 +1,38 @@
+id: CBX-CORE-001
+title: 'plan: what to work on next, without an LLM'
+priority: high
+domain: core
+created: 2026-10-15
+created_by: maintainer
+source_task: ''
+steps:
+- id: a
+  title: 'Write the contract: ready set, topological order, critical path, rank by how much each step unblocks'
+  target: any
+  needs: []
+  status: done
+  depends_on: [CBX-REL-001.d]
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - db078dcca7fa5ef0d40575be3e854e3ed513e6ae
+- id: b
+  title: crossbox plan, with --json; the global --machine plans as another machine sees it
+  target: any
+  needs: []
+  status: done
+  depends_on: [a]
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 6e661655e6dbbc786fa6b4aa2a2633ae4125765f
+- id: c
+  title: 'Invariant tests: deterministic ties, cycles named, malformed steps never planned'
+  target: any
+  needs: []
+  status: done
+  depends_on: [b]
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 6e661655e6dbbc786fa6b4aa2a2633ae4125765f

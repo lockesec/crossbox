@@ -1,0 +1,57 @@
+id: CBX-REL-001
+title: '0.1.0: first public release'
+priority: high
+domain: rel
+created: 2026-10-15
+created_by: maintainer
+source_task: ''
+steps:
+- id: a
+  title: 'Split the README: pitch and walkthrough on top, reference in docs/'
+  target: any
+  needs: []
+  status: done
+  depends_on: []
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 61735fe245da0d0c46b2f7335f258adddbce7d59
+- id: b
+  title: examples/demo.sh plays the walkthrough, and CI runs it
+  target: any
+  needs: []
+  status: done
+  depends_on: []
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 490858cb336ca4d884fa599b8e1654ab800ef1ba
+- id: c
+  title: 'Sample queues: this roadmap and examples/sample-queue/'
+  target: any
+  needs: []
+  status: done
+  depends_on: []
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 8c2d0edaa4077e78097eb9182efadcdc6894c747
+- id: d
+  title: 'Independent review: every finding fixed or written up, each with a test'
+  target: any
+  needs: []
+  status: done
+  depends_on: [a, b, c]
+  completed_by: maintainer
+  completed: 2026-10-15
+  commits:
+  - 73edcb760db937f7196039c9444c20bc95a406fb
+- id: e
+  title: Publish to PyPI with trusted publishing from a tagged CI run
+  target: pypi
+  needs: [maintainer-go]
+  status: skipped
+  depends_on: [d]
+  notes: 'SKIPPED 2026-10-18 by maintainer. Reason: folded into 0.2.0: 0.1.0 was never published, so the first release is 0.2.0.'
+  completed_by: maintainer
+  completed: 2026-10-18

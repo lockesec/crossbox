@@ -1,0 +1,2 @@
+{"title": "Write the migration", "notes": "multi-line notes\nsurvive in this form"}
+{"title": "Run it on staging", "needs": ["staging-up"], "depends": ["a"]}

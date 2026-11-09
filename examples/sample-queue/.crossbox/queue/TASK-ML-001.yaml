@@ -1,0 +1,20 @@
+id: TASK-ML-001
+title: Train the spam classifier
+priority: low
+domain: ml
+created: 2026-10-15
+created_by: laptop
+source_task: ''
+steps:
+- id: a
+  title: Label 2,000 sign-ups
+  target: any
+  needs: []
+  status: pending
+  depends_on: []
+- id: b
+  title: Train and evaluate on the GPU box
+  target: gpu
+  needs: []
+  status: pending
+  depends_on: [a]

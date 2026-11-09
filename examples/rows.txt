@@ -1,0 +1,5 @@
+# batch-add input: title | target | needs | depends | notes | priority
+# only the title is required; \| is a literal pipe; apostrophes are kept as typed
+Write the parser's tests | any | | | cover a \| b and O'Brien's case
+Port the parser | any | | a
+Benchmark on the GPU box | gpu | large | b
