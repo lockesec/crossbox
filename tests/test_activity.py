@@ -17,7 +17,19 @@ def _task(repo, tid, sids):
         f"id: {tid}\ntitle: t\npriority: normal\nsteps:\n{body}")
 
 
+def _same_day(ago):
+    """A claim is dated by its calendar day, and activity counts from that day's midnight
+    (UTC). A commit "an hour ago" made in the first hour after midnight would land on the
+    day before the claim and not count, so a same-day age is kept inside the current UTC
+    day. Older ages (a day or more) are left alone: those tests age the claim too."""
+    if ago >= DAY:
+        return ago
+    return min(ago, max(0, int(time.time() % DAY) - 1))
+
+
 def _commit(where, msg, ago=0, path="work.txt"):
+    """Commit `msg` dated `ago` seconds back (kept on today's UTC day); returns the age used."""
+    ago = _same_day(ago)
     f = where / path
     f.write_text((f.read_text() if f.exists() else "") + msg + "\n")
     git(where, "add", "-A")
@@ -27,6 +39,7 @@ def _commit(where, msg, ago=0, path="work.txt"):
     cp = subprocess.run(["git", "commit", "-q", "-m", msg], cwd=str(where), env=env,
                         capture_output=True, text=True)
     assert cp.returncode == 0, cp.stderr
+    return ago
 
 
 def _age_claim(repo, days):
@@ -225,7 +238,7 @@ def test_a_branch_is_dated_by_its_own_creation_not_its_tip_commit(repo):
 def test_a_branch_without_a_reflog_falls_back_to_its_tip_date(repo):
     _task(repo, "TASK-A-001", "a")
     git(repo, "add", "-A")
-    _commit(repo, "queue", ago=2 * HOUR)
+    ago = _commit(repo, "queue", ago=2 * HOUR)
     assert run(repo, "claim", "TASK-A-001.a").code == 0
     git(repo, "config", "core.logAllRefUpdates", "false")
     git(repo, "branch", "work/TASK-A-001.a")
@@ -233,7 +246,7 @@ def test_a_branch_without_a_reflog_falls_back_to_its_tip_date(repo):
     _, j = _act(repo)
     c = _state(j, "TASK-A-001.a")
     assert "branch" in c["signals"]
-    assert 2 * HOUR - 120 <= time.time() - c["last"] <= 2 * HOUR + 600
+    assert ago - 120 <= time.time() - c["last"] <= ago + 600
 
 
 def test_a_repo_with_no_commits_says_so_and_is_not_evaluable(tmp_path):
