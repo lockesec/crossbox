@@ -51,7 +51,7 @@ def test_plugin_json_matches_marketplace_and_package():
     assert j["name"] == _load(ROOT / ".claude-plugin" / "marketplace.json")["plugins"][0]["name"]
     assert j["version"] == _package_version()
     assert j["license"] == "Apache-2.0"
-    assert j["author"] == {"name": "crossbox"}  # the project, never a person
+    assert j["author"] == {"name": "locke"}
     assert j["repository"] == "https://github.com/lockesec/crossbox"
 
 
@@ -108,8 +108,7 @@ def test_no_stale_reference_to_the_old_example_paths():
     for rel in ("README.md", "docs/agents.md", "examples/demo.sh",
                 ".github/workflows/ci.yml", "MANIFEST.in"):
         assert "pretooluse-queue-guard" not in (ROOT / rel).read_text(), rel
-    assert not (ROOT / "examples" / "claude-code" / "session-start.sh").exists()
-    assert (ROOT / "examples" / "claude-code" / "README.md").is_file()
+    assert not (ROOT / "examples" / "claude-code").exists()      # the hooks live in plugin/ only
 
 
 # ---------------------------------------------------------------- fixtures

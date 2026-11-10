@@ -111,6 +111,12 @@ def _completed_epoch(step) -> Optional[float]:
     return None
 
 
+def _closed_on(step) -> Optional[str]:
+    """The day a step was closed, as recorded: `completed` holds a date, not a time."""
+    t = _completed_epoch(step)
+    return None if t is None else _dt.datetime.fromtimestamp(t, _dt.timezone.utc).date().isoformat()
+
+
 def unreadable(ctx) -> list:
     """[(task id, file name, error)] for every task file that does not parse: its steps are not
     read, so no count over them is complete."""
@@ -172,6 +178,7 @@ def _unreachable(ctx, done, base, now):
                 cause, t = "UNMERGED", _commit_time(ctx, sha)
             rows.append({"ref": sref, "sha": sha, "cause": cause,
                          "age_seconds": _age(now, t),
+                         **({"closed_on": _closed_on(s)} if cause == "MISSING" else {}),
                          "evidence": f"commit {sha[:7]} " + (
                              f"not in {name}" if cause == "UNMERGED"
                              else "no longer exists (rebased away or collected)")})
@@ -200,7 +207,7 @@ def _artifacts(ctx, done, now):
             if gitutil.git(top, "cat-file", "-e", f"HEAD:{p.rstrip('/')}").returncode == 0:
                 continue
             if "/" not in p.rstrip("/"):
-                # a bare name ("backtest.py") names a file, not where it is: present when any
+                # a bare name ("build.py") names a file, not where it is: present when any
                 # tracked file at HEAD has that name
                 if names is None:
                     ls = gitutil.git(top, "ls-tree", "-r", "--name-only", "HEAD")
@@ -208,7 +215,7 @@ def _artifacts(ctx, done, now):
                 if p in names:
                     continue
             rows.append({"ref": sref, "path": p,
-                         "age_seconds": _age(now, _completed_epoch(s)),
+                         "age_seconds": _age(now, _completed_epoch(s)), "closed_on": _closed_on(s),
                          "evidence": f"`{p}` cited in the notes, absent at HEAD"})
     return rows, total
 
@@ -257,7 +264,7 @@ def assess(ctx, days: int = 30) -> dict:
     now = time.time()
     done, open_, every = _steps(ctx)
     res = {"days": days, "baseline": None, "classes": {}}
-    unev = [{"ref": r, "age_seconds": _age(now, _completed_epoch(s))}
+    unev = [{"ref": r, "age_seconds": _age(now, _completed_epoch(s)), "closed_on": _closed_on(s)}
             for r, s in done if not (isinstance(s.get("commits"), list) and s["commits"])]
     res["classes"]["unevidenced"] = _cls(len(done), rows=unev)
 
@@ -325,15 +332,24 @@ def _ago_s(a):
     return "age unknown" if a is None else _ago(a)
 
 
+def _closed_s(r):
+    """A date-only closure prints its date ("closed today"), never an hour count."""
+    d = r.get("closed_on")
+    if not d:
+        return "closed, date unknown"
+    return "closed today" if d == _dt.datetime.now(_dt.timezone.utc).date().isoformat() else f"closed {d}"
+
+
 def _row(k, r):
     if k == "unevidenced":
-        return f"{_c(r['ref'])}  ({_ago_s(r['age_seconds'])} closed)"
+        return f"{_c(r['ref'])}  ({_closed_s(r)})"
     if k == "unreachable":
-        return f"{_c(r['ref'])}  {r['cause']}  {_c(r['evidence'])}  ({_ago_s(r['age_seconds'])})"
+        when = _closed_s(r) if "closed_on" in r else _ago_s(r["age_seconds"])
+        return f"{_c(r['ref'])}  {r['cause']}  {_c(r['evidence'])}  ({when})"
     if k == "claimed_closed_but_open":
         return (f"{_c(r['ref'])}  {r['sha'][:7]} {_c(r['subject'])}  ({_ago_s(r['age_seconds'])})")
     if k == "artifact_missing":
-        return f"{_c(r['ref'])}  {_c(r['evidence'])}  (closed {_ago_s(r['age_seconds'])})"
+        return f"{_c(r['ref'])}  {_c(r['evidence'])}  ({_closed_s(r)})"
     return (f"{_c(r['branch'])}  {r['commits']} commit(s), newest {_ago_s(r['age_seconds'])}"
             f"  names {', '.join(_c(x) for x in r['refs'])}")
 

@@ -21,6 +21,7 @@ the wait.
 from __future__ import annotations
 
 import contextlib
+import math
 import os
 import time
 from pathlib import Path
@@ -33,10 +34,18 @@ LOCK_NAME = ".crossbox.lock"
 
 
 def timeout() -> float:
-    try:
-        return float(os.environ.get("CROSSBOX_LOCK_TIMEOUT", DEFAULT_TIMEOUT))
-    except ValueError:
+    """Seconds a writer waits for the lock. A value that cannot be read is NOT EVALUABLE,
+    naming the variable, as the rate gate's are: a setting silently ignored is not set."""
+    raw = os.environ.get("CROSSBOX_LOCK_TIMEOUT")
+    if not raw:
         return DEFAULT_TIMEOUT
+    try:
+        t = float(raw)
+    except ValueError:
+        t = float("nan")
+    if not (math.isfinite(t) and t >= 0):
+        raise NotEvaluable(f"CROSSBOX_LOCK_TIMEOUT={raw!r} is not a number of seconds (0 or more)")
+    return t
 
 
 @contextlib.contextmanager

@@ -16,13 +16,15 @@ The [Claude Code plugin](plugin.md) bundles both hooks below, a skill, MCP tools
   -delete/-exec`, `git -C DIR` and `git rm/mv/clean`, `patch`, `unlink`, `shred`,
   `sponge`, `vim`-family editors and an interpreter fed a heredoc. It is active
   only in a project that holds the directory at its root (`CLAUDE_PROJECT_DIR`, else the
-  event's working directory, which is not walked up: set `CLAUDE_PROJECT_DIR`). It never blocks reads,
-  and it is a best-effort nudge, not a sandbox. Known limits: a command that hides
+  event's working directory, which is not walked up: set `CLAUDE_PROJECT_DIR`). It does not target reads:
+  a writer counts only in the same simple command that names the directory, and a word
+  inside quotes is text (`crossbox note 'do not rm .crossbox'` passes). It is a
+  best-effort nudge, not a sandbox. Known limits: a command that hides
   the path (a script file, a variable, an alias, a glob such as `.cross*`, a `cd` to
   a computed path, `xargs`, `env` or `bash -c` / `sh -c` around the writer), uses a writer
   that is not in the list above (`curl -o`, `wget -O`, `tar -x`, `unzip`,
   `awk -i inplace`, `ed`, `mkdir`, ...), or puts more than 16 words between `sed`
-  and its `-i`, can get past it, as can a `>&file` redirect. It does nothing at all when
+  and its `-i`, can get past it. It does nothing at all when
   `CLAUDE_PROJECT_DIR` is unset and the event starts in a subdirectory. To stop an agent editing the guard itself away, pair
   it with an integrity check of the hook surface (any check that the hook files and settings are unchanged).
 

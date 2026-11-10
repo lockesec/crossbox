@@ -258,3 +258,28 @@ def test_plain_status_on_a_clean_queue_exits_0(repo):
     """R5/F6: see INVARIANTS.md, fifth-review findings."""
     assert run(repo, "new", "ok", "--domain", "A").code == 0
     assert run(repo, "status").code == 0
+
+
+def test_a_notes_file_that_is_not_utf8_is_named_not_a_traceback(repo):
+    """`notes` runs from the SessionStart hook; a damaged file must say so, not crash."""
+    notes = repo / ".crossbox" / "notes"
+    notes.mkdir(exist_ok=True)
+    (notes / "workstation-to-laptop.md").write_bytes(b"\xff\xfe bad")
+    r = run(repo, "notes", "all")
+    assert r.code == 2 and "Traceback" not in r.out + r.err, r
+    assert "workstation-to-laptop.md" in r.out + r.err and "UTF-8" in r.out + r.err
+    good = notes / "laptop-to-workstation.md"
+    run(repo, "note", "hello")                     # another file still reads
+    assert good.exists() and "hello" in run(repo, "notes", "all").out
+    bad = notes / "laptop-to-workstation.md"
+    bad.write_bytes(b"\xff\xfe also bad")
+    r = run(repo, "note", "again")
+    assert r.code == 2 and bad.read_bytes() == b"\xff\xfe also bad", r     # nothing appended
+
+
+def test_a_step_status_of_the_wrong_shape_is_listed_not_a_crash(repo):
+    task_path(repo, "TASK-001").write_text(
+        "id: TASK-001\ntitle: t\nsteps:\n- id: a\n  title: s\n  status: [done]\n")
+    for argv in (["status"], ["show", "TASK-001"]):
+        r = run(repo, *argv)
+        assert "Traceback" not in r.out + r.err and "UNKNOWN STATUS" in r.out, (argv, r)

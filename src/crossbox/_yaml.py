@@ -16,8 +16,8 @@
   itself, so a small cap costs nothing: 16 references bound the expansion
   near 2^8 copies.
 
-Duplicate detection follows the pattern of a strict loader written for a
-sibling project; the error carries a mark, so callers report the line.
+Duplicate detection is the usual strict-loader pattern (a SafeLoader whose mapping
+constructor refuses a repeated key); the error carries a mark, so callers report the line.
 """
 from __future__ import annotations
 

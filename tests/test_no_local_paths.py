@@ -11,9 +11,29 @@ ROOT = Path(__file__).resolve().parents[1]
 LOCAL = re.compile(r"(?<![\w.])/(?:home|Users)/[\w.-]+/|/tmp/claude-|[A-Za-z]:\\Users\\")
 
 
+_NOT_SHIPPED = {"build", "dist", "__pycache__"}
+
+
+def _files():
+    """Tracked files in a checkout; outside one (an unpacked sdist or a zip download) every
+    file on disk except environments, caches and build output, so the check still runs."""
+    r = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True)
+    if r.returncode == 0 and (ROOT / ".git").exists():
+        return r.stdout.split()
+    return [str(p.relative_to(ROOT)) for p in ROOT.rglob("*")
+            if p.is_file() and not any(part.startswith(".") or part in _NOT_SHIPPED
+                                       or part.endswith(".egg-info")
+                                       for part in p.relative_to(ROOT).parts[:-1])]
+
+
+def test_the_file_list_works_outside_a_git_checkout(tmp_path, monkeypatch):
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: subprocess.CompletedProcess(a, 128, "", ""))
+    files = _files()
+    assert "README.md" in files and not any(f.startswith(".git/") for f in files)
+
+
 def test_no_tracked_file_holds_a_local_absolute_path():
-    files = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True,
-                           check=True).stdout.split()
+    files = _files()
     hits = []
     for f in files:
         p = ROOT / f

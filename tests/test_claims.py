@@ -308,3 +308,17 @@ def test_all_box_is_a_hidden_alias_of_all_machine(repo):
                               capture_output=True, text=True,
                               env={**os.environ, "PYTHONPATH": str(SRC)}).stdout
     assert "--all-machine" in helptext and "--all-box" not in helptext
+
+
+def test_claiming_a_step_this_slot_already_holds_adds_nothing(repo):
+    run(repo, "new", "a task")
+    tid = sorted((repo / ".crossbox" / "queue").glob("*.yaml"))[0].stem
+    assert run(repo, "add", tid, "s").code == 0
+    ref = f"{tid}.a"
+    claims = repo / ".crossbox" / "claims.yaml"
+    assert run(repo, "claim", ref).code == 0
+    once = claims.read_text()
+    r = run(repo, "claim", ref)
+    assert r.code == 0 and "already hold" in r.out, r
+    assert claims.read_text() == once
+    assert once.count(f"step_ref: {ref}") == 1

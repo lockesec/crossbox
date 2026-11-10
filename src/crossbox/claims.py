@@ -314,7 +314,15 @@ def cmd_claim(ctx, subject: str, source: str = "", intent: str = "",
             ctx.warn(f"warning: {b} is already claimed by {other.get('id')} ({who}); "
                      f"claims are advisory: talk to them before working it")
     ns = namespace(ctx.machine, my_slot)
+    mine = {r.get("step_ref"): r.get("id") for r in rows
+            if isinstance(r, dict) and r.get("status") == "active" and r.get("step_ref")
+            and r.get("machine") == ctx.machine and r.get("slot") == my_slot}
+    added = 0
     for b in bindings:
+        if b and b in mine:
+            ctx.say(f"you already hold {mine[b]} on {b}; nothing added")
+            continue
+        added += 1
         row = {"id": next_claim_id(rows, ns), "machine": ctx.machine, "slot": my_slot,
                "subject": subject, "source": source or "", "intent": intent or "",
                "created": ctx.date_str, "status": "active"}
@@ -327,6 +335,8 @@ def cmd_claim(ctx, subject: str, source: str = "", intent: str = "",
             ctx.say(f"claimed {row['id']} (UNBOUND: not tied to a step, so no "
                     f"collision check, readiness view or rate-gate exemption can see it; "
                     f"use a step ref as the subject or --step)")
+    if not added:
+        return OK
     save_claims(ctx.cfg.claims, rows)
     ctx.say("This claim exists only in this tree until you commit and push "
             f"{ctx.cfg.rel(ctx.cfg.claims)}.")

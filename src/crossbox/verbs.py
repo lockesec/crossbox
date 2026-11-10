@@ -939,6 +939,11 @@ MARK = {"done": "[x]", "skipped": "[-]", "pending": "[ ]", "blocked": "[!]",
         "in_progress": "[~]"}
 
 
+def _mark(status) -> str:
+    """A hand-edited status can be any YAML value (a list is unhashable); anything else is '[?]'."""
+    return MARK.get(status, "[?]") if isinstance(status, str) else "[?]"
+
+
 def cmd_show(ctx, task, full=False):
     tf = ctx.store.resolve(task)
     tag = ""
@@ -964,10 +969,10 @@ def cmd_show(ctx, task, full=False):
             ctx.say(f"  ??? malformed step: {s!r}")
             continue
         st = s.get("status")
-        mark = MARK.get(st, "[?]")
+        mark = _mark(st)
         ctx.say(f"  {mark} {s.get('id')}  {s.get('title', '')}")
         t, known = _deps.read_target(s.get("target"), ctx.cfg)
-        bits = [f"status: {st}" + ("" if st in MARK else "  (UNKNOWN STATUS)"),
+        bits = [f"status: {st}" + ("" if isinstance(st, str) and st in MARK else "  (UNKNOWN STATUS)"),
                 f"target: {t}" + ("" if known else " (unknown)")]
         if s.get("needs"):
             bits.append(f"needs: {', '.join(map(str, s['needs']))}")
@@ -1016,7 +1021,7 @@ def cmd_status(ctx, domain=None):
             if st in model.TERMINAL:
                 continue
             flag = "" if st in model.OPEN else "  (UNKNOWN STATUS)"
-            ctx.say(f"    {MARK.get(st, '[?]')} {model.clean(s.get('id'))}  "
+            ctx.say(f"    {_mark(st)} {model.clean(s.get('id'))}  "
                     f"{model.clean(s.get('title', ''))}{flag}")
     ctx.say(f"{len(good)} task(s) listed of {len(files)} queue file(s)"
             + (f"; {len(bad)} unparseable (not listed, so this listing is a floor)"

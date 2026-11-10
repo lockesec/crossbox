@@ -2,8 +2,7 @@
 
 The design contract lists 80 numbered invariants, each a testable rule named after the
 defect it prevents. This table maps every one to the tests that cover it. All 80 apply
-to v1; none is out of scope. (Invariants that concern out-of-scope features, such as
-the evidence-review family, were not part of the numbered list.)
+to v1; none is out of scope.
 
 Several invariants describe line-editor defects (1-12) that the canonical writer
 removes by construction. They are still tested: the test feeds the hand-written shape

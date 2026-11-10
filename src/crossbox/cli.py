@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 
 from . import __version__, doctor, graphview, lock, notes, plan, rategate, ready, verbs, views, why, activity, prose, closures
@@ -47,6 +48,23 @@ def _positive(v):
     if n < 1:
         raise argparse.ArgumentTypeError(f"{v!r} is not a positive integer")
     return n
+
+
+def _days(v):
+    n = _positive(v)
+    if n > 36500:
+        raise argparse.ArgumentTypeError(f"{v!r} is more than 36500 days")
+    return n
+
+
+def _hours(v):
+    try:
+        h = float(v)
+    except ValueError:
+        h = float("nan")
+    if not (math.isfinite(h) and 0 < h <= 87600):
+        raise argparse.ArgumentTypeError(f"{v!r} is not a number of hours from above 0 to 87600")
+    return h
 
 
 def _percent(v):
@@ -250,11 +268,11 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument("--json", action="store_true", help="machine-readable output")
     p = add("activity", "is each claim's holder working? claim liveness and unclaimed work, from git")
     p.add_argument("--json", action="store_true")
-    p.add_argument("--hot-hours", type=float, default=24.0,
+    p.add_argument("--hot-hours", type=_hours, default=24.0,
                    help="evidence this recent reads HOT (default 24)")
     p = add("closures", "are the queue's closures true? unreachable commits, missing artifacts, closed-but-open steps, unmerged branches")
     p.add_argument("--json", action="store_true")
-    p.add_argument("--days", type=_positive, default=30,
+    p.add_argument("--days", type=_days, default=30,
                    help="how far back commits are read for closing phrases (default 30)")
     p = add("why", "why a step is not workable here, traced to its root blockers")
     p.add_argument("ref", nargs="?", help="step ref or task id (omit for the queue-wide line)")

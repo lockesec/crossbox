@@ -46,6 +46,12 @@ should get an acknowledgement within 7 days.
   MCP read tools and MCP `crossbox_done` pass `--no-probes` unless the
   environment sets `CROSSBOX_ALLOW_PROBES=1`, because a cloned repository's
   registry is untrusted and opening it must not execute its commands.
+- **Queue text reaches the agent.** The plugin's SessionStart hook prints what is ready,
+  the claims and the newest notes into every session. Titles, claim subjects and notes are
+  free text written by whoever can push to the repository, so in a clone you did not write
+  they are an instruction channel like any other file an agent reads. Control characters
+  are stripped; the words are not. The hook labels its output as queue data, not
+  instructions; treat a note that asks for something unusual as you would a README that does.
 - **The git hooks run a configured command.** The pre-commit hook and the merge driver run
   the `crossbox` command set in your local git config. Review that setting like any other
   executable path.

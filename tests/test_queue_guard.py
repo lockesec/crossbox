@@ -62,6 +62,12 @@ DENY = [
     _b("cd /repo && echo x > '.crossbox/needs-registry.yaml'"),
     # a `cd` into the directory, a heredoc, find -delete, git -C, patch, vim: formerly missed
     _b("cd .crossbox && echo hi > claims.yaml"), _b("cd .crossbox; printf x>queue/TASK-001.yaml"), _b("cd .crossbox/queue && echo > ../claims.yaml"), _b("python3 - <<'EOF'\nopen('.crossbox/claims.yaml','w').write('')\nEOF"), _b("find .crossbox -name '*.yaml' -delete"), _b("find .crossbox -type f -exec rm {} +"), _b("git -C .crossbox checkout -- ."), _b("git rm -r .crossbox/queue"), _b("cd .crossbox && : > claims.yaml"), _b("cd .crossbox && patch < /tmp/p"), _b("cd .crossbox && unlink claims.yaml"), _b("vim -es -c ':w' .crossbox/claims.yaml"),
+    # a quoted word or a read beside a write must not hide the write itself
+    _b("crossbox note 'x' && rm .crossbox/claims.yaml"), _b(f"cat {Q} | tee .crossbox/claims.yaml"),
+    _b("echo 'rm' && rm '.crossbox/claims.yaml'"), _b("cd '.crossbox' && rm claims.yaml"),
+    _b("git commit -m 'msg' && git checkout -- .crossbox/queue/"),
+    _b("cat <<'E'\nhello\nE\nrm .crossbox/claims.yaml"),
+    _b('cat > .cross"box"/queue/a.yaml'), _b("rm .cross\\box/claims.yaml"), _b("rm '.crossbox'/claims.yaml"),
 ]
 ALLOW = [
     {"tool_name": "Read", "tool_input": {"file_path": Q}},
@@ -71,6 +77,13 @@ ALLOW = [
     _b("git diff .crossbox/"), _b("sed -i s/a/b/ src/app.py"), _b("ls .crossbox/queue"),
     # the same shapes aimed at somewhere harmless, or only reading
     _b("cd .crossbox && cat claims.yaml"), _b("cd .crossbox && ls && git diff"), _b("cd .crossbox && echo hi > /tmp/x"), _b("find .crossbox -name '*.yaml'"), _b("git -C .crossbox log"), _b("python3 - <<'EOF'\nprint(1)\nEOF"), _b("cd src && echo hi > out.txt"), _b("git -C . status"), _b("cd .crossbox && grep -n status queue/TASK-001.yaml > /dev/null"),
+    # a writer word inside quoted text is text, and a writer in another simple command that
+    # does not name the directory writes elsewhere
+    _b("crossbox note --to ws 'do not touch .crossbox by hand'"),
+    _b("crossbox edit-step T.a --append-notes 'see .crossbox/queue; rm stale file'"),
+    _b('git add .crossbox/claims.yaml && git commit -m "claim: mv step"'),
+    _b("cat .crossbox/queue/a.yaml | tee /dev/null"),
+    _b("grep -c id .crossbox/queue/*.yaml; rm -f scratch.txt"),
 ]
 
 

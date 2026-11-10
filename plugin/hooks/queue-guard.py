@@ -4,7 +4,10 @@
 Refuses direct writes to anything under the crossbox directory (task files,
 claims.yaml, notes, config and the needs registry, whose probes are shell
 commands), so every write goes through the tool's round-trip gate, rate gate
-and origin guard. Reads are never blocked.
+and origin guard. Reads are not targeted: a writing command counts only in the
+same simple command (split on ; && || | and newlines) that names the directory,
+and a word inside quotes is text, not a command, so `crossbox note 'do not rm
+.crossbox'` and `cat .crossbox/x | tee /dev/null` pass.
 
 What it covers:
   * Write, Edit, MultiEdit and NotebookEdit on a path under the directory;
@@ -127,6 +130,63 @@ def redirects_into(command: str, d: str, cwd: str = "") -> bool:
     return False
 
 
+def unquote(s: str) -> str:
+    """What the shell sees after quote removal: `.cross"box"` and `.cross\\box` are `.crossbox`."""
+    return re.sub(r"[\"'\\\\]", "", s)
+
+
+def segments(command: str) -> list:
+    """The simple commands of ``command`` as (raw, bare) pairs. Splits on ; & | and newlines
+    outside quotes; ``bare`` blanks every quoted span, so a quoted word is not a command. A
+    heredoc keeps the rest of the command with the command that reads it, unblanked:
+    a command after the heredoc ends is still seen."""
+    out, raw, bare, q, i = [], [], [], "", 0
+    while i < len(command):
+        c = command[i]
+        if q:
+            raw.append(c)
+            bare.append(" ")
+            if c == "\\" and q == '"' and i + 1 < len(command):
+                raw.append(command[i + 1])
+                bare.append(" ")
+                i += 1
+            elif c == q:
+                q = ""
+        elif c in "'\"":
+            q = c
+            raw.append(c)
+            bare.append(" ")
+        elif c == "\\" and i + 1 < len(command):
+            raw.append(command[i:i + 2])
+            bare.append("  ")
+            i += 1
+        elif command.startswith("<<", i):
+            raw.append(command[i:])
+            bare.append(command[i:])      # the body and anything after it stay visible
+            break
+        elif c in ";&|\n":
+            out.append(("".join(raw), "".join(bare)))
+            raw, bare = [], []
+        else:
+            raw.append(c)
+            bare.append(c)
+        i += 1
+    out.append(("".join(raw), "".join(bare)))
+    return [s for s in out if s[0].strip()]
+
+
+def writes_into(command: str, d: str, cwd: str = "") -> bool:
+    """A simple command that names ``d`` (or runs after a `cd` into it, or in a cwd inside it)
+    and has a writing command outside its quoted text."""
+    inside = bool(cwd and under(cwd, d))
+    for raw, bare in segments(command):
+        if (inside or names_dir(unquote(raw), d)) and WRITERS.search(bare):
+            return True
+        if any(under(m.group(2), d) for m in CD.finditer(unquote(raw))):
+            inside = True
+    return False
+
+
 def decide(event: dict, d: str):
     tool = event.get("tool_name", "")
     inp = event.get("tool_input") or {}
@@ -139,9 +199,9 @@ def decide(event: dict, d: str):
     elif tool == "Bash":
         cmd = str(inp.get("command", ""))
         cwd = event.get("cwd") if isinstance(event.get("cwd"), str) else ""
-        if redirects_into(cmd, d, cwd):
+        if redirects_into(cmd, d, cwd) or redirects_into(unquote(cmd), d, cwd):
             return f"do not redirect into {d}/; use the crossbox CLI"
-        if (names_dir(cmd, d) or (cwd and under(cwd, d))) and WRITERS.search(cmd):
+        if writes_into(cmd, d, cwd):
             return f"do not modify {d}/ from the shell; use the crossbox CLI"
     return None
 

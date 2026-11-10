@@ -60,7 +60,9 @@ def _branch_re(ref: str):
 
 
 def _midnight(d: _dt.date) -> float:
-    return _dt.datetime(d.year, d.month, d.day, tzinfo=_dt.timezone.utc).timestamp()
+    """LOCAL midnight of `d`: claim dates are local (ctx.now), so the window opens on the same
+    clock. UTC midnight shifted it by the UTC offset (east of UTC, fresh work did not count)."""
+    return _dt.datetime(d.year, d.month, d.day).timestamp()
 
 
 class Scan:
@@ -87,8 +89,7 @@ class Scan:
             # would hide every recent commit below it; the date is filtered after the walk
             cp = gitutil.git(ctx.repo, "log", "--branches", "--remotes", "HEAD",
                              f"--max-count={MAX_COMMITS}", f"--format={fmt}")
-            self._since = _dt.datetime(since.year, since.month, since.day,
-                                       tzinfo=_dt.timezone.utc).timestamp()
+            self._since = _midnight(since)
             br = gitutil.git(ctx.repo, "for-each-ref", "--format=%(refname)%1f"
                              "%(committerdate:unix)", "refs/heads", "refs/remotes")
         except gitutil.GitError as e:

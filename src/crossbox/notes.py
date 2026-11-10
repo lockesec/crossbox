@@ -11,7 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from . import gitutil, ids, model
-from .errors import OK, CrossboxError, UsageError
+from .errors import NOT_EVALUABLE, OK, CrossboxError, NotEvaluable, UsageError
 
 
 def my_tokens(ctx) -> set:
@@ -72,7 +72,11 @@ def cmd_note(ctx, message: str, to=None) -> int:
     lines = message.strip("\n").splitlines()
     entry = f"- **[{stamp}]** {lines[0]}\n" + "".join(f"  {ln}\n" for ln in lines[1:])
     if path.exists():
-        text = path.read_text(encoding="utf-8")
+        try:
+            text = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError as e:     # appending would bury the damage; say where it is
+            raise NotEvaluable(f"{ctx.cfg.rel(path)} is not UTF-8 (byte {e.start}); "
+                               "nothing appended") from None
         if text and not text.endswith("\n"):
             text += "\n"
     else:
@@ -101,11 +105,20 @@ def cmd_notes(ctx, show_all: bool = False) -> int:
         files = sorted(p for p in ctx.cfg.notes.glob("*.md")) if ctx.cfg.notes.is_dir() else []
     else:
         files = _incoming(ctx)
+    unreadable = []
     for p in files:
         ctx.say(f"== {p.name}")
-        ctx.say(p.read_text(encoding="utf-8").rstrip("\n"))
+        try:
+            ctx.say(p.read_text(encoding="utf-8").rstrip("\n"))
+        except UnicodeDecodeError as e:     # the others still show; this one is named
+            unreadable.append(p.name)
+            ctx.say(f"(not shown: not UTF-8 at byte {e.start})")
     ctx.say(f"{len(files)} inbox file(s)" + ("" if show_all else f" addressed to "
                                               f"{_from_token(ctx)}"))
+    if unreadable:
+        ctx.warn(f"NOT EVALUABLE: {len(unreadable)} notes file(s) are not UTF-8: "
+                 + ", ".join(unreadable))
+        return NOT_EVALUABLE
     return OK
 
 

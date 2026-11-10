@@ -105,3 +105,19 @@ def test_known_keys_raise_no_unknown_key_warning(repo):
     _cfg(repo, "stale_days: 2\nrate_gate: {cap: 5, window: 60}\nextra_refs: []\n")
     r = run(repo, "status")
     assert r.code == 0 and "unknown key" not in r.err
+
+
+@pytest.mark.parametrize("argv", [["closures", "--days", "99999999999"], ["closures", "--days", "0"],
+                                  ["activity", "--hot-hours", "nan"], ["activity", "--hot-hours", "-5"],
+                                  ["activity", "--hot-hours", "1e999"], ["activity", "--hot-hours", "0"]])
+def test_out_of_range_numbers_are_usage_errors(repo, argv):
+    r = run(repo, *argv)
+    assert r.code == 64 and "Traceback" not in r.out + r.err, r
+
+
+@pytest.mark.parametrize("value", ["abc", "nan", "-1", "inf"])
+def test_a_lock_timeout_that_cannot_be_read_is_not_evaluable(repo, monkeypatch, value):
+    """A setting that is silently ignored is a setting that is off: name the variable."""
+    monkeypatch.setenv("CROSSBOX_LOCK_TIMEOUT", value)
+    r = run(repo, "new", "a task")
+    assert r.code == 2 and "CROSSBOX_LOCK_TIMEOUT" in r.err, r

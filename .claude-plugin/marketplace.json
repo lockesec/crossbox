@@ -1,6 +1,6 @@
 {
   "name": "crossbox",
-  "owner": {"name": "crossbox"},
+  "owner": {"name": "locke"},
   "metadata": {"description": "The crossbox task queue for Claude Code agents."},
   "plugins": [
     {

@@ -31,12 +31,12 @@ to any new example directory.
 Run the tests without installing the package:
 
 ```console
-python -m pip install pytest pyyaml
+python -m pip install -e ".[test]"
 python -m pytest
 ```
 
 PyYAML is the only runtime dependency, used through `safe_load`/`safe_dump` only, and
-it should stay that way. Python 3.9 is the floor.
+it should stay that way. Python 3.11 is the floor.
 
 If a contribution adapts someone else's code or design, name the source in the
 module's header comment and in the README's Credits section, and make sure its

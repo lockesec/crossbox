@@ -135,8 +135,8 @@ def _check_locked(verb, path, cap, window, now):
         raise CrossboxError(
             f"rate gate: REFUSED `{verb}`: {len(stamps)} mutating calls in the last "
             f"{int(window)} s (cap {cap}) on this machine. If an agent is looping, stop "
-            f"it; otherwise retry in ~{retry} s. (Closing or skipping a step you hold a claim on "
-            f"is exempt.)")
+            f"it; otherwise retry in ~{retry} s. (Closing, skipping, editing or releasing a step "
+            f"you hold a claim on is exempt.)")
     stamps.append(now)
     try:
         model.atomic_write_text(path, json.dumps({"stamps": stamps}))

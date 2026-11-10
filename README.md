@@ -61,7 +61,7 @@ machine sees the work it can do.
 | Keep the files sound | `crossbox doctor`: checks, repairs, self-tests; installs the hook and merge driver | [doctor](docs/doctor.md) |
 
 The CLI is the only writer. To set up a clone: `crossbox init`, `crossbox doctor install-merge-driver`,
-`crossbox doctor install-hook` ([setup](docs/walkthrough.md#set-up-a-clone)). POSIX; CI runs Ubuntu on Python 3.9 to 3.14.
+`crossbox doctor install-hook` ([setup](docs/walkthrough.md#set-up-a-clone)). POSIX; CI runs Ubuntu on Python 3.11 to 3.14.
 
 ## In a Claude Code session
 
@@ -76,13 +76,13 @@ Details and limits: [docs/plugin.md](docs/plugin.md), [docs/agents.md](docs/agen
 
 ## Why you can trust it
 
-1. **Agents' claims are checked against git.** `closures`: every `done` names a reachable commit. `activity`: every claim has commits behind it. `lint`: decisions written in a step's notes that no field records, such as a gate named in prose.
+1. **Agents' claims are checked against git.** `closures`: every commit a `done` names is reachable, and a `done` that names none is counted. `activity`: every claim has commits behind it. `lint`: decisions written in a step's notes that no field records, such as a gate named in prose.
 2. **A write is whole or nothing.** A file is replaced only after the writer's own output parses back to the same data. A per-tree lock serialises writers: a second writer waits, then exits 2 rather than overwrite.
 3. **Exit 2 means it could not look.** A failed fetch, a damaged claims file, an unreadable ref or a probe with no answer is NOT EVALUABLE (exit 2), not a clean 0. Counts print beside their denominators; a count that may be incomplete is labelled a floor.
 4. **Claims merge the same way on every clone.** The merge driver matches claims by identity, not id string, and is tested idempotent and commutative, so criss-cross merges converge on one id per claim.
-5. **Guards name the collision.** The origin guard names the ref and the ids. The rate gate refuses a machine past 30 writes in 10 minutes (the default), says when the window reopens, and does not count closing steps this worktree has claimed. A claim collision names both holders; the claim that reached the upstream first keeps the step.
+5. **Guards name the collision.** The origin guard names the ref and the ids. The rate gate refuses a machine past 30 writes in 10 minutes (the default), says when the window reopens, and does not count closing, skipping, editing or releasing steps this worktree has claimed. A claim collision names both holders; the claim that reached the upstream first keeps the step.
 6. **The commit is yours.** crossbox runs git reads and `fetch` (plus `git mv` in `renumber` and `git config` in the installers). It does not commit or push.
-7. **Tested against a written contract.** A clean-room rebuild from a contract of 80 invariants, every finding a test before its fix: over 880 tests. [tests/INVARIANTS.md](tests/INVARIANTS.md) maps each promise to its tests.
+7. **Tested against a written contract.** Rebuilt from scratch against 80 numbered invariants ([DESIGN.md](DESIGN.md)), every review finding a test before its fix: over 1,100 tests. [tests/INVARIANTS.md](tests/INVARIANTS.md) maps each promise to its tests.
 
 ## Exit codes
 
@@ -99,7 +99,7 @@ Every verb and flag: [docs/reference.md](docs/reference.md) and [configuration](
 ## Where it falls short
 
 - **Claims are advisory.** Two sessions can claim one step before either pushes; crossbox reports it, it cannot prevent it. Uncommitted work elsewhere is invisible.
-- **It has one real user so far.** Its parent runs daily in the author's private project; nobody else's team has tried it.
+- **It has one real user so far.** An earlier version runs daily in the author's private project; nobody else's team has tried it.
 - **Gate probes are shell commands from the repository.** In a clone you did not write, read `needs-registry.yaml` or pass `--no-probes`.
 
 How it was checked, known holes and what is untested: [docs/limits.md](docs/limits.md).

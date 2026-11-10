@@ -95,6 +95,18 @@ def test_round_trip_gate_writes_nothing_on_mismatch(repo, monkeypatch):
     assert p.read_text() == before
 
 
+def test_round_trip_gate_compares_the_data_not_only_the_step_ids(repo, monkeypatch):
+    """A change the step-id check cannot see (a title) must still be caught by the data
+    comparison: a writer whose output re-reads as different data writes nothing."""
+    p = _mk(repo, "id: TASK-A-001\ntitle: t\nsteps: []\n")
+    before = p.read_text()
+    real = model.render
+    monkeypatch.setattr(model, "render", lambda d: real(d).replace("title: next", "title: NEXT"))
+    r = run(repo, "add", "TASK-A-001", "next")
+    assert r.code == 1 and "does not re-read as the intended data" in r.err, r
+    assert p.read_text() == before
+
+
 def test_post_write_check_restores_original(repo, monkeypatch, tmp_path):
     p = _mk(repo, "id: TASK-A-001\ntitle: t\nsteps: []\n")
     before = p.read_text()

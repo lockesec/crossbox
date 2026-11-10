@@ -18,13 +18,15 @@ def _task(repo, tid, sids):
 
 
 def _same_day(ago):
-    """A claim is dated by its calendar day, and activity counts from that day's midnight
-    (UTC). A commit "an hour ago" made in the first hour after midnight would land on the
-    day before the claim and not count, so a same-day age is kept inside the current UTC
+    """A claim is dated by its local calendar day, and activity counts from that day's local
+    midnight. A commit "an hour ago" made in the first hour after midnight would land on the
+    day before the claim and not count, so a same-day age is kept inside the current local
     day. Older ages (a day or more) are left alone: those tests age the claim too."""
     if ago >= DAY:
         return ago
-    return min(ago, max(0, int(time.time() % DAY) - 1))
+    import datetime as dt
+    since_midnight = time.time() - dt.datetime.combine(dt.date.today(), dt.time()).timestamp()
+    return min(ago, max(0, int(since_midnight) - 1))
 
 
 def _commit(where, msg, ago=0, path="work.txt"):

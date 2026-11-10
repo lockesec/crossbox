@@ -16,10 +16,10 @@ crossbox doctor install-hook           # pre-commit: refuse damaged task files
 commit that. The merge-driver and hook installers write per-clone git
 configuration, so run them once in every clone (worktrees of one clone share it).
 
-> **Trust boundary.** `crossbox ready` (and `status --summary --ready`) runs the
-> shell commands in `.crossbox/needs-registry.yaml` `probe:` fields. That file
-> comes with the repository, so in a clone you did not write, read it first or
-> run `crossbox ready --no-probes`. See [SECURITY.md](../SECURITY.md).
+> **Trust boundary.** `crossbox ready` (and `plan`, `near-done`, `graph`, `done`,
+> `status --summary --ready`) runs the shell commands in
+> `.crossbox/needs-registry.yaml` `probe:` fields. That file comes with the
+> repository, so in a clone you did not write, read it first or pass `--no-probes`. See [SECURITY.md](../SECURITY.md).
 
 ## Two agents, two worktrees
 

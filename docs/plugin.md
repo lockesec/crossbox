@@ -20,13 +20,13 @@ is deliberate: a missing command is NOT EVALUABLE, never a silent empty queue.
     .claude-plugin/marketplace.json     the marketplace: one plugin, source ./plugin
     plugin/.claude-plugin/plugin.json   name, version (= the package version), description
     plugin/hooks/hooks.json             SessionStart + PreToolUse, both via ${CLAUDE_PLUGIN_ROOT}
-    plugin/hooks/session-start.sh       moved from examples/claude-code/ (examples keep a README pointer)
-    plugin/hooks/queue-guard.py         moved from examples/claude-code/pretooluse-queue-guard.py
+    plugin/hooks/session-start.sh       prints what is ready, your claims and new notes at session start
+    plugin/hooks/queue-guard.py         refuses direct edits under .crossbox/ (see agents.md)
     plugin/skills/crossbox/SKILL.md     the loop
     plugin/.mcp.json                    the MCP server
     plugin/mcp/crossbox_mcp.py          stdio MCP server, stdlib only
     plugin/statusline/crossbox-status.sh     sh entry for the status line
-    plugin/statusline/crossbox_status.py     the logic (stdlib, Python 3.9+)
+    plugin/statusline/crossbox_status.py     the logic (stdlib, Python 3.11+)
 
 Nothing is active outside a repository that has a `.crossbox/` directory: the
 hooks (the queue guard included: it allows everything in a project that does not
@@ -49,17 +49,14 @@ used only while `0 <= age < TTL`.
 
 ## a. Hooks
 
-The two example hooks, wired through hooks.json as `sh "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"`
+Two hooks, wired through hooks.json as `sh "${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh"`
 and `python3 "${CLAUDE_PLUGIN_ROOT}/hooks/queue-guard.py"` (run through the
-interpreter, so no executable bit has to survive the install). Both differ from
-the examples they were moved from, and keep the "best-effort nudge, not a sandbox"
-wording.
+interpreter, so no executable bit has to survive the install). Both are
+best-effort nudges, not a sandbox.
 
-- The guard recognises more writers (`unlink`, `shred`, `patch`, `sponge`, editors,
-  `find -delete/-exec`, `git -C`, `git clean/rm/mv`, an interpreter fed a heredoc),
-  treats a redirect after `cd`/`pushd` into the directory, or from a working
-  directory already inside it, as a redirect into it, and acts only in a project that
-  holds the directory at its root.
+- The queue guard refuses Write/Edit on a path under `.crossbox/` and shell commands
+  that write there (the list of writers and the known limits are in
+  [agents.md](agents.md)). It acts only in a project that holds the directory at its root.
 - The session hook goes quiet outside a `.crossbox/` project, passes `--root` for the
   project directory, passes `--no-probes` unless `CROSSBOX_ALLOW_PROBES=1`, and
   inside a project with no `crossbox` command prints a single `NOT EVALUABLE` line.
@@ -82,7 +79,7 @@ crossbox. Under 150 lines.
 ## c. MCP tool
 
 One stdio MCP server (JSON-RPC 2.0, protocol `initialize`, `tools/list`,
-`tools/call`), Python 3.9+, no dependencies. Tools:
+`tools/call`), Python 3.11+, no dependencies. Tools:
 
 | tool | runs | arguments |
 |---|---|---|
@@ -166,26 +163,19 @@ Claude Code's plugin cache):
 
     {"statusLine": {"type": "command", "command": "sh /path/to/plugin/statusline/crossbox-status.sh"}}
 
-## Tests
+## How it is tested
 
-- marketplace.json and plugin.json parse and point at files that exist;
-  plugin version == package version.
-- hooks.json commands resolve under the plugin root.
-- MCP: initialize/tools-list/tools-call over a real subprocess pipe; each
-  tool runs the expected argv (asserted with a fake `crossbox` on PATH);
-  injection attempts (`; rm`, `$(...)`, leading `-`, newline, a 10 MB title)
-  are refused or passed as a single inert argv element; exit 2 surfaces as
-  NOT EVALUABLE; a missing `crossbox` binary gives one clear message.
-- Status line: ready/claimed counts from a fixture queue; exit 2 -> `cbx: ?`;
-  cache honoured.
-- A schema test in pytest (CI has no Claude Code); `claude plugin validate
-  --strict` on `plugin/` and on the marketplace run locally before release.
-- `claude plugin validate --strict` passes on `plugin/` and on the
-  marketplace. The manifest's `author` is the project (`crossbox`), like the
-  marketplace `owner`: the manifest names no person in an author field and the repository has no
-  copyright line. The maintainer's GitHub handle appears in the repository URLs.
-- plugin.json keeps `version` (= package version) on purpose: it pins users
-  to a released version until the next release.
+`tests/test_plugin.py` checks that both manifests parse and point at files that exist,
+that the plugin version equals the package version, and that hooks.json resolves under
+the plugin root. The MCP server is driven over a real subprocess pipe with a fake
+`crossbox` on PATH: each tool must run exactly the expected argv, and injection attempts
+(`; rm`, `$(...)`, a leading `-`, a newline, a 10 MB title) are refused or passed as one
+inert argument. The status line is checked against a fixture queue, its cache and its
+`cbx: ?` on exit 2. CI has no Claude Code, so `claude plugin validate --strict` on
+`plugin/` and on the marketplace runs locally before a release.
+
+plugin.json keeps `version` equal to the package version on purpose: users stay on a
+released version until the next release.
 
 ---
 [README](../README.md) · [walkthrough](walkthrough.md) · [data model](data-model.md) · [reference](reference.md) · [claims](claims.md) · [guards](guards.md) · [readiness](readiness.md) · [plan](plan.md) · [views](views.md) · [closures](closures.md) · [lint](lint.md) · [doctor](doctor.md) · [configuration](configuration.md) · [plugin](plugin.md) · [agents](agents.md) · [known limits](limits.md) · [credits](credits.md)

@@ -76,7 +76,7 @@ P1 means release-blocking, P2 significant and P3 minor.
 | 6 | 20 new (P2 and P3, no P1) | A dependency on an archived task whose file did not parse read as met, so the dependent step was listed READY, while the step-ref form of the same dependency was correctly malformed |
 | 7 | false results in `closures` and `lint`, in both directions | A commit with a skewed date hid recent closing commits from `closures`; `lint` flagged a gate on a step that was already closed |
 
-The suite grew from 146 tests at the first review to over 880. The
+The suite grew from 146 tests at the first review to over 1,100. The
 pattern across rounds matters more than the count. Early rounds found broken
 features. Later rounds found failures at the seams between correct parts: a
 correct rename feeding a correct claim view, a correct writer racing another

@@ -437,9 +437,21 @@ def test_an_unreadable_task_file_is_named_and_the_run_is_not_clean(repo, verb):
 def test_a_bare_file_name_is_present_when_any_tracked_file_has_that_name(repo):
     """R7: see INVARIANTS.md, seventh-review findings."""
     (repo / "engine").mkdir()
-    (repo / "engine" / "backtest.py").write_text("x\n")
-    _task_r7(repo, [("a", "done", '  notes: "fixed `backtest.py` and `gone.py`"\n')])
+    (repo / "engine" / "build.py").write_text("x\n")
+    _task_r7(repo, [("a", "done", '  notes: "fixed `build.py` and `gone.py`"\n')])
     git(repo, "add", "-A")
     git(repo, "commit", "-q", "-m", "q")
     rows = json.loads(run(repo, "closures", "--json").out)["classes"]["artifact_missing"]["rows"]
     assert [r["path"] for r in rows] == ["gone.py"]
+
+
+def test_a_date_only_closure_prints_its_date_not_an_hour_count(repo):
+    """`completed` holds a day, so "23h ago" would be a precision the record does not have."""
+    today = time.strftime("%Y-%m-%d", time.gmtime())
+    _task(repo, "a", status="done", extra=f"  completed: '{today}'\n")
+    _task(repo, "a", status="done", extra="  completed: '2026-01-05'\n", tid="TASK-A-002")
+    _clean(repo)
+    text = run(repo, "closures").out
+    assert "TASK-A-001.a  (closed today)" in text, text
+    assert "TASK-A-002.a  (closed 2026-01-05)" in text, text
+    assert "h ago closed" not in text and "d ago closed" not in text
